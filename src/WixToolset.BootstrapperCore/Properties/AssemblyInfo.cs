@@ -6,6 +6,9 @@ using System.Runtime.InteropServices;
 
 [assembly: AssemblyTitle("Managed Bootstrapper Application (WiX)")]
 [assembly: AssemblyDescription("Managed Bootstrapper Application Core")]
+[assembly: AssemblyProduct("WiX Toolset")]
+[assembly: AssemblyCompany("WiX Toolset Team")]
+[assembly: AssemblyCopyright("Copyright (c) .NET Foundation and contributors. All rights reserved.")]
 
 // Types should not be visible to COM by default.
 [assembly: ComVisible(false)]
