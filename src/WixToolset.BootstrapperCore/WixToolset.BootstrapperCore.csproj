@@ -34,7 +34,7 @@
     <Compile Include="SupportedFrameworkElement.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="BootstrapperCore.config">
+    <Content Include="WixToolset.BootstrapperCore.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
