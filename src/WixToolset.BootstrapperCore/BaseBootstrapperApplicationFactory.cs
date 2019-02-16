@@ -6,10 +6,11 @@ namespace WixToolset.BootstrapperCore
     {
         public IBootstrapperApplication Create(IBootstrapperEngine pEngine, ref Command command)
         {
-            var engine = new Engine(pEngine);
-            return this.Create(engine, ref command);
+            IEngine engine = new Engine(pEngine);
+            IBootstrapperCommand bootstrapperCommand = command.GetBootstrapperCommand();
+            return this.Create(engine, bootstrapperCommand);
         }
 
-        protected abstract IBootstrapperApplication Create(Engine engine, ref Command command);
+        protected abstract IBootstrapperApplication Create(IEngine engine, IBootstrapperCommand bootstrapperCommand);
     }
 }

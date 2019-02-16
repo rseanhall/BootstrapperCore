@@ -26,7 +26,7 @@ namespace WixToolset.BootstrapperCore
         PatchBundle,
     }
 
-    public class PackageInfo
+    public class PackageInfo : IPackageInfo
     {
         public string Id { get; internal set; }
         public string DisplayName { get; internal set; }
@@ -43,7 +43,7 @@ namespace WixToolset.BootstrapperCore
 
         internal PackageInfo() { }
 
-        public static IEnumerable<PackageInfo> ParsePackagesFromXml(XPathNavigator root)
+        public static IEnumerable<IPackageInfo> ParsePackagesFromXml(XPathNavigator root)
         {
             XmlNamespaceManager namespaceManager = new XmlNamespaceManager(root.NameTable);
             namespaceManager.AddNamespace("p", BootstrapperApplicationData.XMLNamespace);
@@ -51,7 +51,7 @@ namespace WixToolset.BootstrapperCore
 
             foreach (XPathNavigator node in nodes)
             {
-                PackageInfo package = new PackageInfo();
+                var package = new PackageInfo();
 
                 string id = BootstrapperApplicationData.GetAttribute(node, "Package");
                 if (id == null)

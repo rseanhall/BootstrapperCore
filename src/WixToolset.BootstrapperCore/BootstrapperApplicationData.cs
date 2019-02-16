@@ -6,7 +6,7 @@ namespace WixToolset.BootstrapperCore
     using System.IO;
     using System.Xml.XPath;
 
-    public class BootstrapperApplicationData
+    public class BootstrapperApplicationData : IBootstrapperApplicationData
     {
         public const string DefaultFileName = "BootstrapperApplicationData.xml";
         public const string XMLNamespace = "http://wixtoolset.org/schemas/v4/2010/BootstrapperApplicationData";
@@ -22,7 +22,7 @@ namespace WixToolset.BootstrapperCore
 
         public FileInfo BADataFile { get; private set; }
 
-        public BundleInfo Bundle { get; private set; }
+        public IBundleInfo Bundle { get; private set; }
 
         public BootstrapperApplicationData() : this(DefaultFile) { }
 

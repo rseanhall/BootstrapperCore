@@ -1708,7 +1708,7 @@ namespace WixToolset.BootstrapperCore
     }
 
     /// <summary>
-    /// Additional arguments used by the engine to allow the user experience to change the source
+    /// Additional arguments used by the engine to allow the BA to change the source
     /// using <see cref="Engine.SetLocalSource"/> or <see cref="Engine.SetDownloadSource"/>.
     /// </summary>
     [Serializable]
