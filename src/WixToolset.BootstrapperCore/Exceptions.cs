@@ -51,10 +51,10 @@ namespace WixToolset.BootstrapperCore
     }
 
     /// <summary>
-    /// The bootstrapper application loaded by the host does not contain exactly one instance of the
-    /// <see cref="BootstrapperApplicationAttribute"/> class.
+    /// The bootstrapper application assembly loaded by the host does not contain exactly one instance of the
+    /// <see cref="BootstrapperApplicationFactoryAttribute"/> class.
     /// </summary>
-    /// <seealso cref="BootstrapperApplicationAttribute"/>
+    /// <seealso cref="BootstrapperApplicationFactoryAttribute"/>
     [Serializable]
     public class MissingAttributeException : BootstrapperException
     {
@@ -97,47 +97,47 @@ namespace WixToolset.BootstrapperCore
     }
 
     /// <summary>
-    /// The bootstrapper application specified by the <see cref="BootstrapperApplicationAttribute"/>
-    ///  does not extend the <see cref="BootstrapperApplication"/> base class.
+    /// The bootstrapper application factory specified by the <see cref="BootstrapperApplicationFactoryAttribute"/>
+    ///  does not extend the <see cref="IBootstrapperApplicationFactory"/> base class.
     /// </summary>
-    /// <seealso cref="BootstrapperApplication"/>
-    /// <seealso cref="BootstrapperApplicationAttribute"/>
+    /// <seealso cref="BaseBootstrapperApplicationFactory"/>
+    /// <seealso cref="BootstrapperApplicationFactoryAttribute"/>
     [Serializable]
-    public class InvalidBootstrapperApplicationException : BootstrapperException
+    public class InvalidBootstrapperApplicationFactoryException : BootstrapperException
     {
         /// <summary>
-        /// Creates a new instance of the <see cref="InvalidBootstrapperApplicationException"/> class.
+        /// Creates a new instance of the <see cref="InvalidBootstrapperApplicationFactoryException"/> class.
         /// </summary>
-        public InvalidBootstrapperApplicationException()
+        public InvalidBootstrapperApplicationFactoryException()
             : base(NativeMethods.E_UNEXPECTED)
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="InvalidBootstrapperApplicationException"/> class.
+        /// Initializes a new instance of the <see cref="InvalidBootstrapperApplicationFactoryException"/> class.
         /// </summary>
         /// <param name="message">Exception message.</param>
-        public InvalidBootstrapperApplicationException(string message)
+        public InvalidBootstrapperApplicationFactoryException(string message)
             : base(message)
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="InvalidBootstrapperApplicationException"/> class.
+        /// Initializes a new instance of the <see cref="InvalidBootstrapperApplicationFactoryException"/> class.
         /// </summary>
         /// <param name="message">Exception message</param>
         /// <param name="innerException">Inner exception associated with this one</param>
-        public InvalidBootstrapperApplicationException(string message, Exception innerException)
+        public InvalidBootstrapperApplicationFactoryException(string message, Exception innerException)
             : base(message, innerException)
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="InvalidBootstrapperApplicationException"/> class.
+        /// Initializes a new instance of the <see cref="InvalidBootstrapperApplicationFactoryException"/> class.
         /// </summary>
         /// <param name="info">Serialization information for this exception</param>
         /// <param name="context">Streaming context to serialize to</param>
-        protected InvalidBootstrapperApplicationException(SerializationInfo info, StreamingContext context)
+        protected InvalidBootstrapperApplicationFactoryException(SerializationInfo info, StreamingContext context)
             : base(info, context)
         {
         }

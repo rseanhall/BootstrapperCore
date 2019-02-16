@@ -504,7 +504,7 @@ namespace WixToolset.BootstrapperCore
     }
 
     /// <summary>
-    /// The display level for the UX.
+    /// The display level for the BA.
     /// </summary>
     public enum Display
     {

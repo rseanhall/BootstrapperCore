@@ -18,7 +18,7 @@ namespace WixToolset.BootstrapperCore
         }
 
         /// <summary>
-        /// Gets the <see cref="HostSection"/> handler for the mux configuration section.
+        /// Gets the <see cref="HostSection"/> handler for the mba configuration section.
         /// </summary>
         [ConfigurationProperty("host")]
         public HostSection Host
