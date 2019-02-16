@@ -8,7 +8,7 @@ namespace WixToolset.BootstrapperCore
     using System.Runtime.InteropServices;
 
     /// <summary>
-    /// Class used by the MUX host to create and return the IBootstrapperApplication implementation to the engine.
+    /// Entry point for the MBA host to create and return the IBootstrapperApplication implementation to the engine.
     /// </summary>
     [ClassInterface(ClassInterfaceType.None)]
     public sealed class BootstrapperApplicationFactory : MarshalByRefObject, IBootstrapperApplicationFactory
@@ -27,62 +27,60 @@ namespace WixToolset.BootstrapperCore
         /// <param name="command">Command line for the bootstrapper application.</param>
         /// <returns>Bootstrapper application via <see cref="IBootstrapperApplication"/> interface.</returns>
         /// <exception cref="MissingAttributeException">The bootstrapper application assembly
-        /// does not define the <see cref="BootstrapperApplicationAttribute"/>.</exception>
+        /// does not define the <see cref="BootstrapperApplicationFactoryAttribute"/>.</exception>
         public IBootstrapperApplication Create(IBootstrapperEngine pEngine, ref Command command)
         {
             // Get the wix.boostrapper section group to get the name of the bootstrapper application assembly to host.
-            HostSection section = ConfigurationManager.GetSection("wix.bootstrapper/host") as HostSection;
+            var section = ConfigurationManager.GetSection("wix.bootstrapper/host") as HostSection;
             if (null == section)
             {
                 throw new MissingAttributeException(); // TODO: throw a more specific exception than this.
             }
 
-            // Load the BA and make sure it extends BootstrapperApplication.
-            Type baType = BootstrapperApplicationFactory.GetBootstrapperApplicationTypeFromAssembly(section.AssemblyName);
-            BootstrapperApplication ba = Activator.CreateInstance(baType) as BootstrapperApplication;
-            if (null == ba)
+            // Load the BA's IBootstrapperApplicationFactory.
+            var baFactoryType = BootstrapperApplicationFactory.GetBAFactoryTypeFromAssembly(section.AssemblyName);
+            var baFactory = (IBootstrapperApplicationFactory)Activator.CreateInstance(baFactoryType);
+            if (null == baFactory)
             {
-                throw new InvalidBootstrapperApplicationException();
+                throw new InvalidBootstrapperApplicationFactoryException();
             }
 
-            ba.Engine = new Engine(pEngine);
-            ba.BAManifest = new BootstrapperApplicationData();
-            ba.Command = command;
+            var ba = baFactory.Create(pEngine, ref command);
             return ba;
         }
 
         /// <summary>
-        /// Locates the <see cref="BootstrapperApplicationAttribute"/> and returns the specified type.
+        /// Locates the <see cref="BootstrapperApplicationFactoryAttribute"/> and returns the specified type.
         /// </summary>
-        /// <param name="assemblyName">The assembly that defines the user experience class.</param>
-        /// <returns>The bootstrapper application <see cref="Type"/>.</returns>
-        private static Type GetBootstrapperApplicationTypeFromAssembly(string assemblyName)
+        /// <param name="assemblyName">The assembly that defines the IBootstrapperApplicationFactory implementation.</param>
+        /// <returns>The bootstrapper application factory <see cref="Type"/>.</returns>
+        private static Type GetBAFactoryTypeFromAssembly(string assemblyName)
         {
-            Type baType = null;
+            Type baFactoryType = null;
 
             // Load the requested assembly.
             Assembly asm = AppDomain.CurrentDomain.Load(assemblyName);
 
             // If an assembly was loaded and is not the current assembly, check for the required attribute.
-            // This is done to avoid using the BootstrapperApplicationAttribute which we use at build time
-            // to specify the BootstrapperApplication assembly in the manifest. This attribute is for custom
-            // BootstrapperApplication assemblies.
+            // This is done to avoid using the BootstrapperApplicationFactoryAttribute which we use at build time
+            // to specify the BootstrapperApplicationFactory assembly in the manifest.
             if (!Assembly.GetExecutingAssembly().Equals(asm))
             {
-                // There must be one and only one BootstrapperApplicationAttribute. The attribute prevents multiple declarations already.
-                BootstrapperApplicationAttribute[] attrs = (BootstrapperApplicationAttribute[])asm.GetCustomAttributes(typeof(BootstrapperApplicationAttribute), false);
+                // There must be one and only one BootstrapperApplicationFactoryAttribute.
+                // The attribute prevents multiple declarations already.
+                var attrs = (BootstrapperApplicationFactoryAttribute[])asm.GetCustomAttributes(typeof(BootstrapperApplicationFactoryAttribute), false);
                 if (null != attrs)
                 {
-                    baType = attrs[0].BootstrapperApplicationType;
+                    baFactoryType = attrs[0].BootstrapperApplicationFactoryType;
                 }
             }
 
-            if (null == baType)
+            if (null == baFactoryType)
             {
                 throw new MissingAttributeException();
             }
 
-            return baType;
+            return baFactoryType;
         }
     }
 }

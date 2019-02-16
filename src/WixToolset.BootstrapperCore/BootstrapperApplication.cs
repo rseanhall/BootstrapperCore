@@ -20,10 +20,13 @@ namespace WixToolset.BootstrapperCore
         /// <summary>
         /// Creates a new instance of the <see cref="BootstrapperApplication"/> class.
         /// </summary>
-        protected BootstrapperApplication()
+        protected BootstrapperApplication(Engine engine, Command command)
         {
-            this.engine = null;
+            this.engine = engine;
+            this.command = command;
             this.applying = false;
+
+            this.baManifest = new BootstrapperApplicationData();
         }
 
         /// <summary>
@@ -328,16 +331,14 @@ namespace WixToolset.BootstrapperCore
         public BootstrapperApplicationData BAManifest
         {
             get { return this.baManifest; }
-            internal set { this.baManifest = value; }
         }
 
         /// <summary>
-        /// Gets the <see cref="Command"/> information for how the UX should be started.
+        /// Gets the <see cref="Command"/> information for how the BA should be started.
         /// </summary>
         public Command Command
         {
             get { return this.command; }
-            internal set { this.command = value; }
         }
 
         /// <summary>
@@ -346,7 +347,6 @@ namespace WixToolset.BootstrapperCore
         public Engine Engine
         {
             get { return this.engine; }
-            internal set { this.engine = value; }
         }
 
         /// <summary>

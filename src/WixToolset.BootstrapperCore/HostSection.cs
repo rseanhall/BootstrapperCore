@@ -24,7 +24,7 @@ namespace WixToolset.BootstrapperCore
         /// Gets the name of the assembly that contians the <see cref="BootstrapperApplication"/> child class.
         /// </summary>
         /// <remarks>
-        /// The assembly specified by this name must contain the <see cref="BootstrapperApplicationAttribute"/> to identify
+        /// The assembly specified by this name must contain the <see cref="BootstrapperApplicationFactoryAttribute"/> to identify
         /// the type of the <see cref="BootstrapperApplication"/> child class.
         /// </remarks>
         [ConfigurationProperty("assemblyName", IsRequired = true)]
