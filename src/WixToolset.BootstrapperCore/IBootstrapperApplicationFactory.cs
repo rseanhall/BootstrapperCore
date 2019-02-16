@@ -4,7 +4,6 @@ namespace WixToolset.BootstrapperCore
 {
     using System;
     using System.CodeDom.Compiler;
-    using System.ComponentModel;
     using System.Runtime.InteropServices;
 
     [ComVisible(true)]
@@ -19,9 +18,6 @@ namespace WixToolset.BootstrapperCore
             );
     }
 
-    /// <summary>
-    /// Command information passed from the engine for the user experience to perform.
-    /// </summary>
     [Serializable]
     [StructLayout(LayoutKind.Sequential)]
     [GeneratedCodeAttribute("WixToolset.Bootstrapper.InteropCodeGenerator", "1.0.0.0")]
@@ -38,127 +34,19 @@ namespace WixToolset.BootstrapperCore
         [MarshalAs(UnmanagedType.Bool)] private readonly bool passthrough;
         [MarshalAs(UnmanagedType.LPWStr)] private readonly string wzLayoutDirectory;
 
-        /// <summary>
-        /// Gets the action for the user experience to perform.
-        /// </summary>
-        public LaunchAction Action
+        public IBootstrapperCommand GetBootstrapperCommand()
         {
-            get { return this.action; }
-        }
-
-        /// <summary>
-        /// Gets the display level for the user experience.
-        /// </summary>
-        public Display Display
-        {
-            get { return this.display; }
-        }
-
-        /// <summary>
-        /// Gets the action to perform if a reboot is required.
-        /// </summary>
-        public Restart Restart
-        {
-            get { return this.restart; }
-        }
-
-        /// <summary>
-        /// Gets command line arguments that weren't processed by the engine. Can be null.
-        /// </summary>
-        [Obsolete("Use GetCommandLineArgs instead.")]
-        public string CommandLine
-        {
-            get { return this.wzCommandLine; }
-        }
-
-        /// <summary>
-        /// Gets layout directory.
-        /// </summary>
-        public string LayoutDirectory
-        {
-            get { return this.wzLayoutDirectory; }
-        }
-
-        /// <summary>
-        /// Gets the method of how the engine was resumed from a previous installation step.
-        /// </summary>
-        public ResumeType Resume
-        {
-            get { return this.resume; }
-        }
-
-        /// <summary>
-        /// Gets the handle to the splash screen window. If no splash screen was displayed this value will be IntPtr.Zero.
-        /// </summary>
-        public IntPtr SplashScreen
-        {
-            get { return this.hwndSplashScreen; }
-        }
-
-        /// <summary>
-        /// If this was run from a related bundle, specifies the relation type.
-        /// </summary>
-        public RelationType Relation
-        {
-            get { return this.relation; }
-        }
-
-        /// <summary>
-        /// If this was run from a backward compatible bundle.
-        /// </summary>
-        public bool Passthrough
-        {
-            get { return this.passthrough; }
-        }
-
-        /// <summary>
-        /// Gets the command line arguments as a string array.
-        /// </summary>
-        /// <returns>
-        /// Array of command line arguments not handled by the engine.
-        /// </returns>
-        /// <exception type="Win32Exception">The command line could not be parsed into an array.</exception>
-        /// <remarks>
-        /// This method uses the same parsing as the operating system which handles quotes and spaces correctly.
-        /// </remarks>
-        public string[] GetCommandLineArgs()
-        {
-            if (null == this.wzCommandLine)
-            {
-                return new string[0];
-            }
-
-            // Parse the filtered command line arguments into a native array.
-            int argc = 0;
-
-            // CommandLineToArgvW tries to treat the first argument as the path to the process,
-            // which fails pretty miserably if your first argument is something like
-            // FOO="C:\Program Files\My Company". So give it something harmless to play with.
-            IntPtr argv = NativeMethods.CommandLineToArgvW("ignored " + this.wzCommandLine, out argc);
-
-            if (IntPtr.Zero == argv)
-            {
-                // Throw an exception with the last error.
-                throw new Win32Exception();
-            }
-
-            // Marshal each native array pointer to a managed string.
-            try
-            {
-                // Skip "ignored" argument/hack.
-                string[] args = new string[argc - 1];
-                for (int i = 1; i < argc; ++i)
-                {
-                    IntPtr argvi = Marshal.ReadIntPtr(argv, i * IntPtr.Size);
-                    args[i - 1] = Marshal.PtrToStringUni(argvi);
-                }
-
-                return args;
-            }
-            finally
-            {
-                NativeMethods.LocalFree(argv);
-            }
+            return new BootstrapperCommand(
+                this.action,
+                this.display,
+                this.restart,
+                this.wzCommandLine,
+                this.nCmdShow,
+                this.resume,
+                this.hwndSplashScreen,
+                this.relation,
+                this.passthrough,
+                this.wzLayoutDirectory);
         }
     }
 }

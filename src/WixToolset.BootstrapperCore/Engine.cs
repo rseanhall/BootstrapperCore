@@ -11,7 +11,7 @@ namespace WixToolset.BootstrapperCore
     /// <summary>
     /// Container class for the <see cref="IBootstrapperEngine"/> interface.
     /// </summary>
-    public sealed class Engine
+    public sealed class Engine : IEngine
     {
         // Burn errs on empty strings, so declare initial buffer size.
         private const int InitialBufferSize = 80;
@@ -61,11 +61,10 @@ namespace WixToolset.BootstrapperCore
             this.secureStringVariables = new Variables<SecureString>(
                 delegate(string name)
                 {
-                    int length;
-                    IntPtr pUniString = getStringVariable(name, out length);
+                    var pUniString = this.getStringVariable(name, out var length);
                     try
                     {
-                        return convertToSecureString(pUniString, length);
+                        return this.convertToSecureString(pUniString, length);
                     }
                     finally
                     {
@@ -89,7 +88,7 @@ namespace WixToolset.BootstrapperCore
                 },
                 delegate(string name)
                 {
-                    return containsVariable(name);
+                    return this.containsVariable(name);
                 }
             );
 
@@ -98,7 +97,7 @@ namespace WixToolset.BootstrapperCore
                 delegate(string name)
                 {
                     int length;
-                    IntPtr pUniString = getStringVariable(name, out length);
+                    IntPtr pUniString = this.getStringVariable(name, out length);
                     try
                     {
                         return Marshal.PtrToStringUni(pUniString, length);
@@ -125,7 +124,7 @@ namespace WixToolset.BootstrapperCore
                 },
                 delegate(string name)
                 {
-                    return containsVariable(name);
+                    return this.containsVariable(name);
                 }
             );
 
@@ -157,17 +156,11 @@ namespace WixToolset.BootstrapperCore
             );
         }
 
-        /// <summary>
-        /// Gets or sets numeric variables for the engine.
-        /// </summary>
-        public Variables<long> NumericVariables
+        public IVariables<long> NumericVariables
         {
             get { return this.numericVariables; }
         }
 
-        /// <summary>
-        /// Gets the number of packages in the bundle.
-        /// </summary>
         public int PackageCount
         {
             get
@@ -179,78 +172,41 @@ namespace WixToolset.BootstrapperCore
             }
         }
 
-        /// <summary>
-        /// Gets or sets string variables for the engine using SecureStrings.
-        /// </summary>
-        public Variables<SecureString> SecureStringVariables
+        public IVariables<SecureString> SecureStringVariables
         {
             get { return this.secureStringVariables; }
         }
 
-        /// <summary>
-        /// Gets or sets string variables for the engine.
-        /// </summary>
-        public Variables<string> StringVariables
+        public IVariables<string> StringVariables
         {
             get { return this.stringVariables; }
         }
 
-        /// <summary>
-        /// Gets or sets <see cref="Version"/> variables for the engine.
-        /// 
-        /// The <see cref="Version"/> class can keep track of when the build and revision fields are undefined, but the engine can't.
-        /// Therefore, the build and revision fields must be defined when setting a <see cref="Version"/> variable.
-        /// Use the NormalizeVersion method to make sure the engine can accept the Version.
-        /// 
-        /// To keep track of versions without build or revision fields, use StringVariables instead.
-        /// </summary>
-        /// <exception cref="OverflowException">The given <see cref="Version"/> was invalid.</exception>
-        public Variables<Version> VersionVariables
+        public IVariables<Version> VersionVariables
         {
             get { return this.versionVariables; }
         }
 
-        /// <summary>
-        /// Install the packages.
-        /// </summary>
-        /// <param name="hwndParent">The parent window for the installation user interface.</param>
         public void Apply(IntPtr hwndParent)
         {
             this.engine.Apply(hwndParent);
         }
 
-        /// <summary>
-        /// Close the splash screen if it is still open. Does nothing if the splash screen is not or
-        /// never was opened.
-        /// </summary>
         public void CloseSplashScreen()
         {
             this.engine.CloseSplashScreen();
         }
 
-        /// <summary>
-        /// Determine if all installation conditions are fulfilled.
-        /// </summary>
         public void Detect()
         {
             this.Detect(IntPtr.Zero);
         }
 
-        /// <summary>
-        /// Determine if all installation conditions are fulfilled.
-        /// </summary>
-        /// <param name="hwndParent">The parent window for the installation user interface.</param>
         public void Detect(IntPtr hwndParent)
         {
             this.engine.Detect(hwndParent);
         }
 
-        /// <summary>
-        /// Elevate the install.
-        /// </summary>
-        /// <param name="hwndParent">The parent window of the elevation dialog.</param>
-        /// <returns>true if elevation succeeded; otherwise, false if the user cancelled.</returns>
-        /// <exception cref="Win32Exception">A Win32 error occurred.</exception>
         public bool Elevate(IntPtr hwndParent)
         {
             int ret = this.engine.Elevate(hwndParent);
@@ -269,12 +225,6 @@ namespace WixToolset.BootstrapperCore
             }
         }
 
-        /// <summary>
-        /// Escapes the input string.
-        /// </summary>
-        /// <param name="input">The string to escape.</param>
-        /// <returns>The escaped string.</returns>
-        /// <exception cref="Win32Exception">A Win32 error occurred.</exception>
         public string EscapeString(string input)
         {
             int capacity = InitialBufferSize;
@@ -296,11 +246,6 @@ namespace WixToolset.BootstrapperCore
             return sb.ToString();
         }
 
-        /// <summary>
-        /// Evaluates the <paramref name="condition"/> string.
-        /// </summary>
-        /// <param name="condition">The string representing the condition to evaluate.</param>
-        /// <returns>Whether the condition evaluated to true or false.</returns>
         public bool EvaluateCondition(string condition)
         {
             bool value;
@@ -309,12 +254,6 @@ namespace WixToolset.BootstrapperCore
             return value;
         }
 
-        /// <summary>
-        /// Formats the input string.
-        /// </summary>
-        /// <param name="format">The string to format.</param>
-        /// <returns>The formatted string.</returns>
-        /// <exception cref="Win32Exception">A Win32 error occurred.</exception>
         public string FormatString(string format)
         {
             int capacity = InitialBufferSize;
@@ -336,91 +275,41 @@ namespace WixToolset.BootstrapperCore
             return sb.ToString();
         }
 
-        /// <summary>
-        /// Launches a preapproved executable elevated.  As long as the engine already elevated, there will be no UAC prompt.
-        /// </summary>
-        /// <param name="hwndParent">The parent window of the elevation dialog (if the engine hasn't elevated yet).</param>
-        /// <param name="approvedExeForElevationId">Id of the ApprovedExeForElevation element specified when the bundle was authored.</param>
-        /// <param name="arguments">Optional arguments.</param>
         public void LaunchApprovedExe(IntPtr hwndParent, string approvedExeForElevationId, string arguments)
         {
-            LaunchApprovedExe(hwndParent, approvedExeForElevationId, arguments, 0);
+            this.LaunchApprovedExe(hwndParent, approvedExeForElevationId, arguments, 0);
         }
 
-        /// <summary>
-        /// Launches a preapproved executable elevated.  As long as the engine already elevated, there will be no UAC prompt.
-        /// </summary>
-        /// <param name="hwndParent">The parent window of the elevation dialog (if the engine hasn't elevated yet).</param>
-        /// <param name="approvedExeForElevationId">Id of the ApprovedExeForElevation element specified when the bundle was authored.</param>
-        /// <param name="arguments">Optional arguments.</param>
-		/// <param name="waitForInputIdleTimeout">Timeout in milliseconds. When set to something other than zero, the engine will call WaitForInputIdle for the new process with this timeout before calling OnLaunchApprovedExeComplete.</param>
         public void LaunchApprovedExe(IntPtr hwndParent, string approvedExeForElevationId, string arguments, int waitForInputIdleTimeout)
         {
-            engine.LaunchApprovedExe(hwndParent, approvedExeForElevationId, arguments, waitForInputIdleTimeout);
+            this.engine.LaunchApprovedExe(hwndParent, approvedExeForElevationId, arguments, waitForInputIdleTimeout);
         }
 
-        /// <summary>
-        /// Logs the <paramref name="message"/>.
-        /// </summary>
-        /// <param name="level">The logging level.</param>
-        /// <param name="message">The message to log.</param>
         public void Log(LogLevel level, string message)
         {
             this.engine.Log(level, message);
         }
 
-        /// <summary>
-        /// Determine the installation sequencing and costing.
-        /// </summary>
-        /// <param name="action">The action to perform when planning.</param>
         public void Plan(LaunchAction action)
         {
             this.engine.Plan(action);
         }
 
-        /// <summary>
-        /// Set the update information for a bundle.
-        /// </summary>
-        /// <param name="localSource">Optional local source path for the update. Default is "update\[OriginalNameOfBundle].exe".</param>
-        /// <param name="downloadSource">Optional download source for the update.</param>
-        /// <param name="size">Size of the expected update.</param>
-        /// <param name="hashType">Type of the hash expected on the update.</param>
-        /// <param name="hash">Optional hash expected for the update.</param>
         public void SetUpdate(string localSource, string downloadSource, long size, UpdateHashType hashType, byte[] hash)
         {
             this.engine.SetUpdate(localSource, downloadSource, size, hashType, hash, null == hash ? 0 : hash.Length);
         }
 
-        /// <summary>
-        /// Set the local source for a package or container.
-        /// </summary>
-        /// <param name="packageOrContainerId">The id that uniquely identifies the package or container.</param>
-        /// <param name="payloadId">The id that uniquely identifies the payload.</param>
-        /// <param name="path">The new source path.</param>
         public void SetLocalSource(string packageOrContainerId, string payloadId, string path)
         {
             this.engine.SetLocalSource(packageOrContainerId, payloadId, path);
         }
 
-        /// <summary>
-        /// Set the new download URL for a package or container.
-        /// </summary>
-        /// <param name="packageOrContainerId">The id that uniquely identifies the package or container.</param>
-        /// <param name="payloadId">The id that uniquely identifies the payload.</param>
-        /// <param name="url">The new url.</param>
-        /// <param name="user">The user name for proxy authentication.</param>
-        /// <param name="password">The password for proxy authentication.</param>
         public void SetDownloadSource(string packageOrContainerId, string payloadId, string url, string user, string password)
         {
             this.engine.SetDownloadSource(packageOrContainerId, payloadId, url, user, password);
         }
 
-        /// <summary>
-        /// Sends error message when embedded.
-        /// </summary>
-        /// <param name="errorCode">Error code.</param>
-        /// <param name="message">Error message.</param>
-        /// <param name="uiHint">UI buttons to show on error dialog.</param>
         public int SendEmbeddedError(int errorCode, string message, int uiHint)
         {
             int result = 0;
@@ -428,11 +317,6 @@ namespace WixToolset.BootstrapperCore
             return result;
         }
 
-        /// <summary>
-        /// Sends progress percentages when embedded.
-        /// </summary>
-        /// <param name="progressPercentage">Percentage completed thus far.</param>
-        /// <param name="overallPercentage">Overall percentage completed.</param>
         public int SendEmbeddedProgress(int progressPercentage, int overallPercentage)
         {
             int result = 0;
@@ -440,19 +324,12 @@ namespace WixToolset.BootstrapperCore
             return result;
         }
 
-        /// <summary>
-        /// Shuts down the engine.
-        /// </summary>
-        /// <param name="exitCode">Exit code indicating reason for shut down.</param>
         public void Quit(int exitCode)
         {
             this.engine.Quit(exitCode);
         }
 
-        /// <summary>
-        /// An accessor for numeric, string, and version variables for the engine.
-        /// </summary>
-        public sealed class Variables<T>
+        internal sealed class Variables<T> : IVariables<T>
         {
             // .NET 2.0 does not support Func<T, TResult> or Action<T1, T2>.
             internal delegate T Getter<T>(string name);
@@ -469,23 +346,12 @@ namespace WixToolset.BootstrapperCore
                 this.contains = contains;
             }
 
-            /// <summary>
-            /// Gets or sets the variable given by <paramref name="name"/>.
-            /// </summary>
-            /// <param name="name">The name of the variable to get/set.</param>
-            /// <returns>The value of the given variable.</returns>
-            /// <exception cref="Exception">An error occurred getting the variable.</exception>
             public T this[string name]
             {
                 get { return this.getter(name); }
                 set { this.setter(name, value); }
             }
 
-            /// <summary>
-            /// Gets whether the variable given by <paramref name="name"/> exists.
-            /// </summary>
-            /// <param name="name">The name of the variable to check.</param>
-            /// <returns>True if the variable given by <paramref name="name"/> exists; otherwise, false.</returns>
             public bool Contains(string name)
             {
                 return this.contains(name);

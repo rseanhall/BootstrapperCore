@@ -18,6 +18,7 @@
     <Compile Include="BootstrapperApplicationData.cs" />
     <Compile Include="BootstrapperApplicationFactory.cs" />
     <Compile Include="BootstrapperApplicationFactoryAttribute.cs" />
+    <Compile Include="BootstrapperCommand.cs" />
     <Compile Include="BootstrapperSectionGroup.cs" />
     <Compile Include="BundleInfo.cs" />
     <Compile Include="Engine.cs" />
@@ -26,8 +27,15 @@
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="HostSection.cs" />
     <Compile Include="IBootstrapperApplication.cs" />
+    <Compile Include="IBootstrapperApplicationData.cs" />
     <Compile Include="IBootstrapperApplicationFactory.cs" />
+    <Compile Include="IBootstrapperCommand.cs" />
     <Compile Include="IBootstrapperEngine.cs" />
+    <Compile Include="IBundleInfo.cs" />
+    <Compile Include="IDefaultBootstrapperApplication.cs" />
+    <Compile Include="IEngine.cs" />
+    <Compile Include="IPackageInfo.cs" />
+    <Compile Include="IVariables.cs" />
     <Compile Include="NativeMethods.cs" />
     <Compile Include="PackageInfo.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

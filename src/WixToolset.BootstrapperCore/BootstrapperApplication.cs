@@ -10,23 +10,28 @@ namespace WixToolset.BootstrapperCore
     /// The default bootstrapper application.
     /// </summary>
     [ClassInterface(ClassInterfaceType.None)]
-    public abstract class BootstrapperApplication : MarshalByRefObject, IBootstrapperApplication
+    public abstract class BootstrapperApplication : MarshalByRefObject, IDefaultBootstrapperApplication
     {
-        private Engine engine;
-        private BootstrapperApplicationData baManifest;
-        private Command command;
+        /// <summary>
+        /// Specifies whether this bootstrapper should run asynchronously. The default is true.
+        /// </summary>
+        protected readonly bool asyncExecution;
+
+        /// <summary>
+        /// Gets the <see cref="IEngine"/> for interaction with the engine.
+        /// </summary>
+        protected readonly IEngine engine;
+
         private bool applying;
 
         /// <summary>
         /// Creates a new instance of the <see cref="BootstrapperApplication"/> class.
         /// </summary>
-        protected BootstrapperApplication(Engine engine, Command command)
+        protected BootstrapperApplication(IEngine engine)
         {
             this.engine = engine;
-            this.command = command;
             this.applying = false;
-
-            this.baManifest = new BootstrapperApplicationData();
+            this.asyncExecution = true;
         }
 
         /// <summary>
@@ -232,7 +237,7 @@ namespace WixToolset.BootstrapperCore
         public event EventHandler<CacheAcquireProgressEventArgs> CacheAcquireProgress;
 
         /// <summary>
-        /// Fired by the engine to allow the user experience to change the source
+        /// Fired by the engine to allow the BA to change the source
         /// using <see cref="M:Engine.SetLocalSource"/> or <see cref="M:Engine.SetDownloadSource"/>.
         /// </summary>
         public event EventHandler<ResolveSourceEventArgs> ResolveSource;
@@ -318,38 +323,6 @@ namespace WixToolset.BootstrapperCore
         public event EventHandler<LaunchApprovedExeCompleteArgs> LaunchApprovedExeComplete;
 
         /// <summary>
-        /// Specifies whether this bootstrapper should run asynchronously. The default is true.
-        /// </summary>
-        public virtual bool AsyncExecution
-        {
-            get { return true; }
-        }
-
-        /// <summary>
-        /// Gets the BA manifest.
-        /// </summary>
-        public BootstrapperApplicationData BAManifest
-        {
-            get { return this.baManifest; }
-        }
-
-        /// <summary>
-        /// Gets the <see cref="Command"/> information for how the BA should be started.
-        /// </summary>
-        public Command Command
-        {
-            get { return this.command; }
-        }
-
-        /// <summary>
-        /// Gets the <see cref="Engine"/> for interaction with the Engine.
-        /// </summary>
-        public Engine Engine
-        {
-            get { return this.engine; }
-        }
-
-        /// <summary>
         /// Entry point that is called when the bootstrapper application is ready to run.
         /// </summary>
         protected abstract void Run();
@@ -366,9 +339,9 @@ namespace WixToolset.BootstrapperCore
                 handler(this, args);
             }
 
-            if (this.AsyncExecution)
+            if (this.asyncExecution)
             {
-                this.Engine.Log(LogLevel.Verbose, "Creating BA thread to run asynchronously.");
+                this.engine.Log(LogLevel.Verbose, "Creating BA thread to run asynchronously.");
                 Thread uiThread = new Thread(this.Run);
                 uiThread.Name = "UIThread";
                 uiThread.SetApartmentState(ApartmentState.STA);
@@ -376,13 +349,13 @@ namespace WixToolset.BootstrapperCore
             }
             else
             {
-                this.Engine.Log(LogLevel.Verbose, "Creating BA thread to run synchronously.");
+                this.engine.Log(LogLevel.Verbose, "Creating BA thread to run synchronously.");
                 this.Run();
             }
         }
 
         /// <summary>
-        /// Called by the engine to uninitialize the user experience.
+        /// Called by the engine to uninitialize the BA.
         /// </summary>
         /// <param name="args">Additional arguments for this event.</param>
         protected virtual void OnShutdown(ShutdownEventArgs args)
@@ -881,7 +854,7 @@ namespace WixToolset.BootstrapperCore
         }
 
         /// <summary>
-        /// Called by the engine to allow the user experience to change the source
+        /// Called by the engine to allow the BA to change the source
         /// using <see cref="M:Engine.SetLocalSource"/> or <see cref="M:Engine.SetDownloadSource"/>.
         /// </summary>
         /// <param name="args">Additional arguments for this event.</param>

@@ -8,32 +8,32 @@ namespace WixToolset.BootstrapperCore
     using System.Xml;
     using System.Xml.XPath;
 
-    public class BundleInfo
+    public class BundleInfo : IBundleInfo
     {
         public bool PerMachine { get; internal set; }
         public string Name { get; internal set; }
         public string LogVariable { get; internal set; }
-        public IDictionary<string, PackageInfo> Packages { get; internal set; }
+        public IDictionary<string, IPackageInfo> Packages { get; internal set; }
 
         internal BundleInfo()
         {
-            this.Packages = new Dictionary<string, PackageInfo>();
+            this.Packages = new Dictionary<string, IPackageInfo>();
         }
 
         public void AddRelatedBundleAsPackage(DetectRelatedBundleEventArgs e)
         {
-            PackageInfo package = PackageInfo.GetRelatedBundleAsPackage(e.ProductCode, e.RelationType, e.PerMachine, e.Version);
+            var package = PackageInfo.GetRelatedBundleAsPackage(e.ProductCode, e.RelationType, e.PerMachine, e.Version);
             this.Packages.Add(package.Id, package);
         }
 
-        public static BundleInfo ParseBundleFromStream(Stream stream)
+        public static IBundleInfo ParseBundleFromStream(Stream stream)
         {
             XPathDocument manifest = new XPathDocument(stream);
             XPathNavigator root = manifest.CreateNavigator();
             return ParseBundleFromXml(root);
         }
 
-        public static BundleInfo ParseBundleFromXml(XPathNavigator root)
+        public static IBundleInfo ParseBundleFromXml(XPathNavigator root)
         {
             BundleInfo bundle = new BundleInfo();
 
@@ -56,7 +56,7 @@ namespace WixToolset.BootstrapperCore
 
             bundle.LogVariable = BootstrapperApplicationData.GetAttribute(bundleNode, "LogPathVariable");
 
-            foreach (PackageInfo package in PackageInfo.ParsePackagesFromXml(root))
+            foreach (var package in PackageInfo.ParsePackagesFromXml(root))
             {
                 bundle.Packages.Add(package.Id, package);
             }
