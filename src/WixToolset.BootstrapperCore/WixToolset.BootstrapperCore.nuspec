@@ -16,8 +16,6 @@
   <files>
     <file src="..\burn\build\$id$.props" target="build\" />
     <file src="..\burn\inc\*" target="build\native\include" />
-    <file src="..\..\build\$configuration$\$id$.config" target="samples" />
-    <file src="..\..\build\$configuration$\$id$.h" target="build\native\include" />
     <file src="..\..\build\$configuration$\$id$.dll" target="lib\net20" />
   </files>
 </package>

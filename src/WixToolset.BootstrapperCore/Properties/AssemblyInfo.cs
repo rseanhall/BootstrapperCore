@@ -4,8 +4,8 @@ using System;
 using System.Reflection;
 using System.Runtime.InteropServices;
 
-[assembly: AssemblyTitle("Managed Bootstrapper Application (WiX)")]
-[assembly: AssemblyDescription("Managed Bootstrapper Application Core")]
+[assembly: AssemblyTitle("Managed Bootstrapper Application Interfaces (WiX)")]
+[assembly: AssemblyDescription("Managed Bootstrapper Application Interfaces")]
 [assembly: AssemblyProduct("WiX Toolset")]
 [assembly: AssemblyCompany("WiX Toolset Team")]
 [assembly: AssemblyCopyright("Copyright (c) .NET Foundation and contributors. All rights reserved.")]
