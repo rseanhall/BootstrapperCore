@@ -10,7 +10,7 @@
     <RootNamespace>WixToolset.BootstrapperCore</RootNamespace>
     <NoWarn>0693;1591</NoWarn>
     <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
-    <Description>WiX Bootstrapper headers and WixToolset.BootstrapperCore</Description>
+    <Description>WiX Bootstrapper interfaces</Description>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="IBootstrapperApplication.cs" />
@@ -31,6 +31,7 @@
 
   <Target Name="Pack" DependsOnTargets="GetBuildVersion">
     <Exec Command='nuget pack $(AssemblyName).nuspec -OutputDirectory "$(BaseOutputPath)$(Configuration)" -Properties Configuration=$(Configuration);Id=$(AssemblyName);Version="$(BuildVersionSimple)";Authors="$(Authors)";Copyright="$(Copyright)";Description="$(Description)";Title="$(Title)"' />
+    <Exec Command='nuget pack ..\burn\$(AssemblyName).Native.nuspec -OutputDirectory "$(BaseOutputPath)$(Configuration)" -Properties Configuration=$(Configuration);Id=$(AssemblyName).Native;Version="$(BuildVersionSimple)";Authors="$(Authors)";Copyright="$(Copyright)";Description="WiX Bootstrapper native interfaces";Title="$(Title)"' />
   </Target>
 
   <Import Project="..\..\packages\Nerdbank.GitVersioning.2.1.65\build\Nerdbank.GitVersioning.targets" Condition="Exists('..\..\packages\Nerdbank.GitVersioning.2.1.65\build\Nerdbank.GitVersioning.targets')" />
