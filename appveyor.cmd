@@ -1,11 +1,9 @@
 @setlocal
 @pushd %~dp0
 
-nuget restore
+nuget restore -SolutionDirectory . src\burn\WixToolset.BootstrapperCore.Native.proj
 
-msbuild -p:Configuration=Release
-
-msbuild -t:Pack -p:Configuration=Release src\WixToolset.BootstrapperCore\WixToolset.BootstrapperCore.csproj
+msbuild src\burn\WixToolset.BootstrapperCore.Native.proj
 
 @popd
 @endlocal
