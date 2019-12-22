@@ -13,7 +13,7 @@
   </ItemGroup>
 
   <Target Name="Pack" DependsOnTargets="GetBuildVersion">
-    <Exec Command='nuget pack $(PackageId).nuspec -OutputDirectory "$(BaseOutputPath)\" -Properties Id=$(PackageId);Version="$(BuildVersionSimple)";Authors="$(Authors)";Copyright="$(Copyright)";Description="$(Description)";Title="$(Title)"' />
+    <Exec Command='nuget pack $(PackageId).nuspec -OutputDirectory "$(BaseOutputPath)Release" -Properties Id=$(PackageId);Version="$(BuildVersionSimple)";Authors="$(Authors)";Copyright="$(Copyright)";Description="$(Description)";Title="$(Title)"' />
   </Target>
   
   <Import Project="..\Directory.Build.props" />  
