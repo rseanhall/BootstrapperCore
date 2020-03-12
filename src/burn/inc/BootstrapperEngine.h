@@ -9,6 +9,12 @@ extern "C" {
 #define IDERROR -1
 #define IDNOACTION 0
 
+#ifndef FACILITY_WIX
+#define FACILITY_WIX 500
+#endif
+
+static const HRESULT E_SUSPECTED_AV_INTERFERENCE = MAKE_HRESULT(SEVERITY_ERROR, FACILITY_WIX, 2000);
+
 // Note that ordering of the enumeration values is important.
 // Some code paths use < or > comparisions and simply reording values will break those comparisons.
 enum BOOTSTRAPPER_ACTION
