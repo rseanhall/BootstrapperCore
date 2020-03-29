@@ -233,6 +233,8 @@ struct BOOTSTRAPPER_COMMAND
     BOOL fPassthrough;
 
     LPWSTR wzLayoutDirectory;
+    LPWSTR wzBootstrapperWorkingFolder;
+    LPWSTR wzBootstrapperApplicationDataPath;
 };
 
 struct BA_ONAPPLYBEGIN_ARGS
