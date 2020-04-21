@@ -675,7 +675,8 @@ struct BA_ONEXECUTEPACKAGEBEGIN_ARGS
 {
     DWORD cbSize;
     LPCWSTR wzPackageId;
-    BOOL fExecute;
+    BOOL fExecute; // false means rollback.
+    BOOTSTRAPPER_ACTION_STATE action;
 };
 
 struct BA_ONEXECUTEPACKAGEBEGIN_RESULTS
