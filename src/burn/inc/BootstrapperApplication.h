@@ -1016,6 +1016,7 @@ struct BOOTSTRAPPER_CREATE_RESULTS
     DWORD cbSize;
     PFN_BOOTSTRAPPER_APPLICATION_PROC pfnBootstrapperApplicationProc;
     LPVOID pvBootstrapperApplicationProcContext;
+    BOOL fDisableUnloading; // indicates the BA dll must not be unloaded after BootstrapperApplicationDestroy.
 };
 
 extern "C" typedef HRESULT(WINAPI *PFN_BOOTSTRAPPER_APPLICATION_CREATE)(
